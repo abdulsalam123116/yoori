@@ -1,0 +1,10 @@
+{
+  "app_version" : "106",
+  "web_version" : "154",
+  "web_version_code" : "1.5.4",
+  "app_version_code" : "1.0.6",
+  "removed_directories" : [
+    "app/Utility/demo_file.txt",
+    "resources/views/frontend/demo_folder"
+  ]
+}
