@@ -10,17 +10,6 @@
       'PaytmWallet' => 'Anand\\LaravelPaytmWallet\\Facades\\PaytmWallet',
     ),
   ),
-  'barryvdh/laravel-debugbar' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Barryvdh\\Debugbar\\ServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Debugbar' => 'Barryvdh\\Debugbar\\Facades\\Debugbar',
-    ),
-  ),
   'brian2694/laravel-toastr' => 
   array (
     'providers' => 
@@ -43,17 +32,6 @@
       'Activation' => 'Cartalyst\\Sentinel\\Laravel\\Facades\\Activation',
       'Reminder' => 'Cartalyst\\Sentinel\\Laravel\\Facades\\Reminder',
       'Sentinel' => 'Cartalyst\\Sentinel\\Laravel\\Facades\\Sentinel',
-    ),
-  ),
-  'facade/ignition' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Facade\\Ignition\\IgnitionServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Flare' => 'Facade\\Ignition\\Facades\\Flare',
     ),
   ),
   'fruitcake/laravel-cors' => 
@@ -91,13 +69,6 @@
     array (
       0 => 'JoeDixon\\Translation\\TranslationServiceProvider',
       1 => 'JoeDixon\\Translation\\TranslationBindingsServiceProvider',
-    ),
-  ),
-  'laravel/sail' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Laravel\\Sail\\SailServiceProvider',
     ),
   ),
   'laravel/sanctum' => 
@@ -185,13 +156,6 @@
     'aliases' => 
     array (
       'PDF' => 'niklasravnsborg\\LaravelPdf\\Facades\\Pdf',
-    ),
-  ),
-  'nunomaduro/collision' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     ),
   ),
   'obydul/laraskrill' => 
