@@ -3,7 +3,7 @@
 		<div class="footer-top">
 			<div class="container">
 				<div class="footer-logo">
-					<router-link :to="{ name: 'home' }"><img v-lazy="settings.footer_logo" alt="preloader" class="img-fluid" /> </router-link>
+					<router-link :to="{ name: 'home' }"><img loading="lazy" :src="settings.footer_logo" alt="preloader" class="img-fluid" /> </router-link>
 				</div>
 				<div class="row">
 					<div class="col-sm-6 col-md-6" v-if="settings.seller_system == 1 && !authUser" :class="[classObj()]">
@@ -167,7 +167,7 @@
 							<li v-if="settings.apple_pay_banner"><img :src="getUrl('public/images/payment-method/apple-pay.svg')" alt="apple_pay_banner" class="img-fluid footer-payment-icon" /></li>
 							<li v-if="settings.amazon_pay_banner"><img :src="getUrl('public/images/payment-method/amazon-pay.svg')" alt="amazon_pay_banner" class="img-fluid footer-payment-icon" /></li>
 							<li v-if="settings.after_pay_banner"><img :src="getUrl('public/images/payment-method/after-pay.svg')" alt="after_pay_banner" class="img-fluid footer-payment-icon" /></li>
-							<li v-if="settings.payment_method_banner"><img :src="settings.payment_method_banner" alt="payment_method_banner" class="img-fluid footer-payment-icon" /></li>
+							<li v-if="settings.payment_method_banner" class="full-payment-img"><img :src="settings.payment_method_banner" alt="payment_method_banner" class="img-fluid footer-payment-icon" /></li>
 						</ul>
 					</div>
 				</div> </div
@@ -232,6 +232,11 @@ export default {
         feature_selector.addClass("list-view-tab");
       }
     }
+		$('.message-title').click(function(){
+			$( this ).siblings('.user-chatbox-show').toggleClass('chatbox-hide');
+			$( this ).closest('.message-title').find('.title-right').toggleClass('chatbox-hide');
+			$( this ).closest('.message-box').toggleClass('chatbox-width');
+		});
   },
   computed: {
 		usefulLinks() {
@@ -251,7 +256,7 @@ export default {
 		},
 		classObj() {
 			return [this.settings.seller_system == 1 && !this.authUser ? "col-lg-2" : "col-lg-3"];
-		},
+		}
 	},
 };
 </script>

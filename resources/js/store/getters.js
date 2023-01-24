@@ -11,6 +11,9 @@ export default {
     getAllCampaign(state) {
         return state.all_campaigns
     },
+    getSettings(state) {
+        return state.settings;
+    },
     getCampaignProducts(state) {
         return state.campaign_products
     },

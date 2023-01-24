@@ -1,27 +1,29 @@
 <template>
 	<section class="sg-seller-product top-shop item-space-rmv" v-if="lengthCounter(countShop) > 0">
 		<div class="container">
-			<div class="title">
+			<div class="title" :class="{ 'title-bg' : addons.includes('ishopet') }">
 				<h1>{{ lang.top_shop }}</h1>
 			</div>
-			<VueSlickCarousel v-bind="slick_settings" :rtl="settings.text_direction == 'rtl'">
-				<single_seller v-for="(shop, i) in sellers" :key="i" :shop="shop"></single_seller>
-			</VueSlickCarousel>
+			<div :class="{ 'slider-arrows' : addons.includes('ishopet') }">
+				<VueSlickCarousel v-bind="slick_settings" :rtl="settings.text_direction == 'rtl'">
+					<single_seller class="slider_div" v-for="(shop, i) in sellers" :key="i" :shop="shop"></single_seller>
+				</VueSlickCarousel>
+			</div>
     </div><!-- /.container -->
   </section><!-- /.sg-store-section -->
 	<section class="sg-seller-product top-shop" v-else-if="show_shimmer">
 		<div class="container">
-			<VueSlickCarousel v-bind="slick_settings" :rtl="settings.text_direction == 'rtl'">
+			<ul>
 				<li v-for="(shop, i) in 4">
 					<div class="sg-product">
 						<div class="product-thumb">
 							<a href="#">
 								<shimmer :height="197"></shimmer>
 							</a>
-						</div> </div
-					><!-- /.sg-product -->
+						</div>
+					</div><!-- /.sg-product -->
 				</li>
-			</VueSlickCarousel>
+			</ul>
 		</div>
 	</section>
 </template>
@@ -41,7 +43,7 @@ export default {
 				dots: false,
 				edgeFriction: 0.35,
 				infinite: true,
-				arrows: false,
+				arrows: true,
 				autoplay: false,
 				adaptiveHeight: true,
 				slidesToShow: 4,
@@ -64,7 +66,7 @@ export default {
 					{
 						breakpoint: 480,
 						settings: {
-							slidesToShow: 2,
+							slidesToShow: 1,
 							slidesToScroll: 2,
 						},
 					},

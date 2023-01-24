@@ -8,6 +8,10 @@ export default {
     getContactPage(state, data) {
         return state.contact_page = data;
     },
+    getSettings(state, data) {
+        return state.settings = data;
+    },
+
     getAllCampaign(state, data,) {
         let campaign = data.data;
         for (let i = 0; i < campaign.length; i++) {

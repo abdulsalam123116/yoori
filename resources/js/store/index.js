@@ -17,7 +17,6 @@ export default {
         sliders: {},
         defaultCategoryShow: false,
         services: {},
-        settings: '',
         viewedProducts: {},
         pages: {},
         navbarClass: '',
@@ -54,9 +53,7 @@ export default {
         getServices(state) {
             return state.services
         },
-        getSettings(state) {
-            return state.settings
-        },
+
         getViewedProducts(state) {
             return state.viewedProducts
         },
@@ -108,9 +105,7 @@ export default {
         services(context, services) {
             context.commit('getServices', services);
         },
-        settings(context, settings) {
-            context.commit('getSettings', settings);
-        },
+
         viewedProducts(context, products) {
             context.commit('getViewedProducts', products);
         },
@@ -152,9 +147,7 @@ export default {
         getServices(state, data) {
             return state.services = data;
         },
-        getSettings(state, data) {
-            return state.settings = data;
-        },
+
         getViewedProducts(state, data) {
             return state.viewedProducts = data;
         },

@@ -265,7 +265,7 @@
                              value="offline_method"
                              name="radio" v-model="payment_form.payment_type">
                       <label :for="'offline'+offline.id">
-                        <img v-lazy="offline.image" :alt="offline.name"
+                        <img loading="lazy" :src="offline.image" :alt="offline.name"
                              class="img-fluid">
                         {{ offline.name }}
                       </label>
@@ -289,6 +289,19 @@
                                     :class_name="'btn btn-primary'"></loading_button>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div class="form-checkbox" v-if="settings.payment_agreement" :class="{ 'mt-5 pt-5' : !(payment_form.total > 0 && authUser && authUser.balance >= payment_form.total && settings.wallet_system == 1) }">
+              <div class="form-group">
+                <input type="checkbox" id="tnc" value="2"
+                       v-model="agreement"
+                       class="form-check-input">
+                <label for="tnc">{{ lang.agreement }}
+                  <a v-if="urlCheck(settings.payment_agreement)"
+                     :href="settings.payment_agreement">{{ lang.terms }}</a>
+                  <router-link v-else :to="'page/'+settings.payment_agreement">{{ lang.terms }}
+                  </router-link>
+                </label>
               </div>
             </div>
           </div>
@@ -322,7 +335,7 @@
                     v-if="loading && (payment_form.payment_type == 'cash_on_delivery' || payment_form.payment_type == 'pay_later')"
                     :class_name="'btn btn-primary w-100'"></loading_button>
 
-                <a :href="getUrl('stripe/redirect?trx_id=' + carts[0].trx_id + '&code=' + $route.params.code)" class="btn btn-primary w-100"
+                <a :href="getUrl('stripe/redirect?trx_id=' + trx_id + '&code=' + $route.params.code)" class="btn btn-primary w-100"
                    v-if="payment_form.payment_type == 'stripe' ">
                   {{ lang.pay_now }}</a>
 
@@ -330,11 +343,11 @@
                    v-if="!payment_form.payment_type">
                   {{ lang.pay_now }}</a>
 
-                <a :href="getUrl('user/payment/paytmRedirect?trx_id=' + carts[0].trx_id + '&code=' + $route.params.code + '&payment_type=paytm')" class="btn btn-primary w-100"
+                <a :href="getUrl('user/payment/paytmRedirect?trx_id=' + trx_id + '&code=' + $route.params.code + '&payment_type=paytm')" class="btn btn-primary w-100"
                    v-if="payment_form.payment_type == 'paytm' ">
                   {{ lang.pay_now }}</a>
 
-                <a :href="getUrl('get/ssl-response?payment_type=ssl_commerze&code=' + $route.params.code + '&trx_id=' + carts[0].trx_id)" class="btn btn-primary w-100"
+                <a :href="getUrl('get/ssl-response?payment_type=ssl_commerze&code=' + $route.params.code + '&trx_id=' + trx_id)" class="btn btn-primary w-100"
                    v-if="payment_form.payment_type == 'ssl_commerze' ">
                   {{ lang.pay_now }}</a>
 
@@ -348,10 +361,10 @@
                                 :code="code" :amount="payment_form.total" :offline_method="offline_method"
                                 :loading="loading"></offline_method>
 
-                <a :href="getUrl('mollie/payment?code='+$route.params.code+'&trx_id='+carts[0].trx_id)"
+                <a :href="getUrl('mollie/payment?code='+$route.params.code+'&trx_id='+trx_id)"
                    class="btn btn-primary w-100" v-if="payment_form.payment_type == 'mollie'"> {{ lang.pay_now }}</a>
 
-                <a :href="getUrl('telr/redirect?code='+$route.params.code+'&trx_id='+carts[0].trx_id)"
+                <a :href="getUrl('telr/redirect?code='+$route.params.code+'&trx_id='+trx_id)"
                    class="btn btn-primary w-100" v-if="payment_form.payment_type == 'telr'"> {{ lang.pay_now }}</a>
                 <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#paystack_modal"
                    v-if="payment_form.payment_type == 'paystack' ">
@@ -360,7 +373,7 @@
                 <flutter_wave v-if="settings.is_flutterwave_activated == 1" :trx_id="trx_id" :code="code"
                               :amount="payment_form.total" :type="payment_form.payment_type" ref="flutter_wave"></flutter_wave>
 
-                <a :href="getUrl('mercadopago/redirect?code='+$route.params.code+'&trx_id='+carts[0].trx_id)"
+                <a :href="getUrl('mercadopago/redirect?code='+$route.params.code+'&trx_id='+trx_id)"
                    class="btn btn-primary w-100"
                    v-if="payment_form.payment_type == 'mercadopago'">
                   {{ lang.pay_now }}</a>
@@ -368,21 +381,21 @@
                 <google_pay v-if="payment_form.payment_type == 'google_pay'" :trx_id="trx_id" :code="code"
                             :amount="payment_form.total"></google_pay>
 
-                <a :href="getUrl('amarpay/redirect?code='+$route.params.code+'&trx_id='+carts[0].trx_id)"
+                <a :href="getUrl('amarpay/redirect?code='+$route.params.code+'&trx_id='+trx_id)"
                    class="btn btn-primary"
                    v-if="payment_form.payment_type == 'amarpay'">
                   {{ lang.pay_now }}</a>
 
-                <a :href="getUrl('bkash/redirect?code='+$route.params.code+'&trx_id='+carts[0].trx_id)"
+                <a :href="getUrl('bkash/redirect?code='+$route.params.code+'&trx_id='+trx_id)"
                    class="btn btn-primary"
                    v-if="payment_form.payment_type == 'bkash'">
                   {{ lang.pay_now }}</a>
 
-                <a :href="getUrl('nagad/redirect?code='+$route.params.code+'&trx_id='+carts[0].trx_id)"
+                <a :href="getUrl('nagad/redirect?code='+$route.params.code+'&trx_id='+trx_id)"
                    class="btn btn-primary"
                    v-if="payment_form.payment_type == 'nagad'">
                   {{ lang.pay_now }}</a>
-                <a :href="getUrl('skrill/redirect?code='+$route.params.code+'&trx_id='+carts[0].trx_id)"
+                <a :href="getUrl('skrill/redirect?code='+$route.params.code+'&trx_id='+trx_id)"
                    class="btn btn-primary"
                    v-if="payment_form.payment_type == 'skrill'">
                   {{ lang.pay_now }}</a>
@@ -477,6 +490,7 @@ export default {
       showStripeModal: false,
       mid_trans_token: '',
       xof: '',
+      agreement: '',
     }
   },
   components: {
@@ -515,6 +529,7 @@ export default {
           this.$store.commit('setLoginRedirection', '');
           this.$Progress.finish();
           let orders = response.data.orders;
+          let coupons = response.data.coupons;
           this.indian_currency = response.data.indian_currency;
           this.xof = response.data.xof;
           this.offline_methods = response.data.offline_methods;
@@ -533,7 +548,11 @@ export default {
               this.payment_form.shipping_tax += parseFloat(orders[i].shipping_cost);
               this.payment_form.tax += parseFloat(orders[i].total_tax);
               if (this.settings.coupon_system == 1) {
-                this.payment_form.coupon_discount += parseFloat(orders[i].coupon_discount);
+                this.coupon_list = coupons;
+                for (let i = 0; i < coupons.length; i++) {
+                  this.payment_form.coupon_discount += parseFloat(coupons[i].discount);
+                }
+                // this.payment_form.coupon_discount += parseFloat(orders[i].coupon_discount);
                 // alert(this.payment_form.coupon_discount);
               }
 
@@ -558,6 +577,7 @@ export default {
     integrateRazorPay() {
       this.razorPayRemove();
       if (this.settings.is_razorpay_activated == 1 && this.indian_currency) {
+        alert(true);
         let myScript = document.createElement('script');
 
         myScript.setAttribute('type', 'text/javascript');
@@ -615,6 +635,7 @@ export default {
         file: this.product_form.image,
         payment_type: payment_type,
         trx_id: this.trx_id,
+        is_buy_now:this.$route.params.is_type ? this.$route.params.is_type : 0
       };
 
       let url = this.getUrl('user/complete-order?code=' + this.code);
@@ -657,11 +678,7 @@ export default {
     checkCurrency(code){
       let currency = this.$store.getters.getCurrencies;
       let find = currency.findIndex(c=>c.code == code);
-      if(find > -1){
-        return true
-      }else{
-        return false
-      }
+      return find > -1;
     }
   },
 

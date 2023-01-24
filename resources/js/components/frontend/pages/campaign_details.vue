@@ -85,7 +85,7 @@
                     <div class="brand_image">
                       <a :href="getUrl('brand/'+brand.slug)"
                          @click.prevent="routerNavigator('product.by.brand',brand.slug)">
-                        <img v-lazy="brand.image_130x93"
+                        <img :src="brand.image_130x93" loading="lazy"
                              :alt="brand.title" class="img-fluid">
                       </a>
 

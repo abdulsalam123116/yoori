@@ -2,7 +2,7 @@
 	<div v-if="productDetails.id">
 		<div class="row">
 			<div :class="{ 'col-lg-4 col-md-12': $route.name == 'product.details', 'col-lg-5': $route.name != 'product.details' }" v-if="lengthCounter(productDetails.gallery) > 0">
-				<div class="product-slider-section">
+				<div class="product-slider-section slider-arrows">
 					<div>
             <CoolLightBox style="direction: ltr;"
                 :items="productDetails.gallery.large"
@@ -45,20 +45,20 @@
 						<div class="product-details-2">
 							<div class="product-details-header">
 								<h2>{{ productDetails.product_name }}</h2>
-								<div class="product-code" v-if="stockFind().sku">
+								<div class="product-code" v-if="stockFind() && stockFind().sku && attributes_fetched">
 									<ul class="global-list d-flex">
 										<li>{{ lang.SKU }}: {{ stockFind().sku }}</li>
 									</ul>
 								</div>
-								<div class="sg-rating">
-									<h3>{{ productDetails.rating > 0 ? productDetails.rating.toFixed(2) : 0 }} </h3>
+								<div class="sg-rating" v-if="productDetails.rating > 0">
+									<h3>{{ productDetails.rating.toFixed(2) }} </h3>
 									<star-rating v-model:rating="productDetails.rating" :read-only="true" :star-size="12" :round-start-rating="false" class="rating-position"></star-rating>
 									<span class="rating"> ({{ productDetails.reviews_count }} {{ lang.reviews }})</span>
 								</div>
 							</div>
 							<!-- /.product-details-header -->
 
-							<div class="product-stock-delivery">
+							<div class="product-stock-delivery" v-if="productDetails.special_discount_check > 0 || (productType() && productDetails.is_digital != 1 && productDetails.stock_visibility != 'hide_stock')">
 								<div v-if="productType() && productDetails.is_digital != 1 && productDetails.stock_visibility != 'hide_stock'">
 									<div class="stock-in" v-if="stockFind().stock > 0">
 										<span class="mdi mdi-check-circle-outline"></span>
@@ -89,8 +89,7 @@
 										<li>
 											<span class="seconds">{{ seconds }}</span>
 											<p>{{ lang.secs }}</p>
-										</li> </ul
-									><!-- countdown -->
+										</li> </ul>
 								</div>
 							</div>
 							<!-- /.product-stock-delivery -->
@@ -113,25 +112,28 @@
 								<div class="sg-color">
 									<h5>{{ lang.color }}:</h5>
 									<div v-for="(color, index) in productDetails.product_colors" :key="'color' + index">
-										<input type="radio" value="color1" :id="'color' + color.id" v-model="product_form.color_id" :value="color.id" @change="attributeSelect()" />
-										<label :for="'color' + color.id">
+										<input type="radio" value="color1" :id="'color' + color.id" v-model="product_form.color_id" :value="color.id" @change="attributeSelect($event.target)"
+                           :disabled="checkDisable(0,color)"/>
+										<label :for="'color' + color.id" :class="{ 'disabled_radio' : checkDisable(0,color) }">
 											<span :style="'background:' + color.code"></span>
 										</label>
 									</div>
 								</div>
 							</div>
 							<!-- sg-product-color -->
-							<div class="sg-product-size" v-for="(attribute, attribute_index) in attributes" :key="'attribute' + attribute_index">
+							<div class="sg-product-size" v-for="(attribute, attribute_index) in attributes" :key="'attribute' + attribute_index"  v-if="attributes.length > 0">
 								<div class="sg-size">
 									<h5>{{ attribute.title }}:</h5>
 									<form action="#">
-										<div v-for="(value, value_index) in valuesByAttribute(attribute.id)" :key="'value' + value_index" v-if="value.attribute_id == attribute.id">
-											<input type="radio" :id="attribute.id + '_attribute_' + value.id" :value="value.id" v-model="product_form.attribute_values[attribute_index]" @change="attributeSelect()" />
-											<label :for="attribute.id + '_attribute_' + value.id">{{ value.value }}</label>
+										<div v-for="(value, value_index) in productDetails.attribute_values" :key="'value' + value_index" v-if="value.attribute_id == attribute.id">
+											<input type="radio" :id="attribute.id + '_attribute_' + value.id" :value="value.id" v-model="product_form.attribute_values[attribute_index]"
+                             @change="attributeSelect($event.target,attribute.id,value.id)" :disabled="checkDisable(attribute_index,value)"/>
+											<label :for="attribute.id + '_attribute_' + value.id" :class="{ 'disabled_radio' : checkDisable(attribute_index,value) }">{{ value.value }}</label>
 										</div>
 									</form>
 								</div>
 							</div>
+
 							<div class="product-quantity product-border" v-if="settings.wholesale_price_variations_show == 1 && productDetails.is_wholesale && productDetails.wholesale_prices.length > 0">
 								<table>
 									<tr>
@@ -148,21 +150,20 @@
 							</div>
 							<!-- product-quantity -->
 
-							<div class="product-offer product-border" v-if="productDetails.short_description" v-html="productDetails.short_description"> </div>
+							<div class="product-offer product-border" v-if="productDetails.short_description" v-html="productDetails.short_description">
+              </div>
 							<!-- product-offer -->
-
 							<div class="product-details-totalPrice product-border" v-if="productDetails.is_digital != 1 && productDetails.is_catalog != 1 && productDetails.is_classified != 1">
 								<div class="count-quantity" data-trigger="spinner">
-									<a class="btn pull-left" href="javascript:;" data-spin="down" @click="cartMinus">
+									<a class="btn pull-left" href="javascript:void(0);" data-spin="down" @click="cartMinus">
 										<span class="mdi mdi-name mdi-minus"></span>
 									</a>
 									<input type="text" name="quantity" @focusout="quantityCheck" v-model="product_form.quantity" title="quantity" class="input-text" />
-									<a class="btn pull-right" href="javascript:;" data-spin="up" @click="cartPlus">
+									<a class="btn pull-right" href="javascript:void(0);" data-spin="up" @click="cartPlus">
 										<span class="mdi mdi-name mdi-plus"></span>
 									</a>
 								</div>
-								<h3
-									>{{ lang.total_price }}:
+								<h3>{{ lang.total_price }}:
 									<span v-if="productDetails.special_discount_check > 0 && productDetails.is_wholesale != 1">{{ priceFormat(productDetails.product_stock.discount_percentage * product_form.quantity) }} </span>
 									<span v-else-if="productDetails.is_wholesale != 1">{{ priceFormat(productDetails.product_stock.price * product_form.quantity) }}</span>
 									<span v-if="productDetails.is_wholesale == 1">{{ priceFind() }}</span>
@@ -183,8 +184,9 @@
 										</a>
 									</div>
 									<div class="buyNowBTN d-flex align-items-center">
-										<a href="javascript:void(0)" @click="addToCart(productDetails.minimum_order_quantity, 1)">
-											<svg xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="42" height="42"><path d="M21,6H18A6,6,0,0,0,6,6H3A3,3,0,0,0,0,9V19a5.006,5.006,0,0,0,5,5H19a5.006,5.006,0,0,0,5-5V9A3,3,0,0,0,21,6ZM12,2a4,4,0,0,1,4,4H8A4,4,0,0,1,12,2ZM22,19a3,3,0,0,1-3,3H5a3,3,0,0,1-3-3V9A1,1,0,0,1,3,8H6v2a1,1,0,0,0,2,0V8h8v2a1,1,0,0,0,2,0V8h3a1,1,0,0,1,1,1Z"/></svg> {{ lang.buy_now }}
+										<a href="javascript:void(0)" @click="addToCart(productDetails.minimum_order_quantity, 1,1)">
+											<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24"><path d="M10.975 8l.025-.5c0-.517-.067-1.018-.181-1.5h5.993l-.564 2h-5.273zm-2.475 10c-.828 0-1.5.672-1.5 1.5 0 .829.672 1.5 1.5 1.5s1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5zm11.305-15l-3.432 12h-10.428l-.455-1.083c-.323.049-.653.083-.99.083-.407 0-.805-.042-1.191-.114l1.306 3.114h13.239l3.474-12h1.929l.743-2h-4.195zm-6.305 15c-.828 0-1.5.671-1.5 1.5s.672 1.5 1.5 1.5 1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5zm-4.5-10.5c0 2.485-2.018 4.5-4.5 4.5-2.484 0-4.5-2.015-4.5-4.5s2.016-4.5 4.5-4.5c2.482 0 4.5 2.015 4.5 4.5zm-2-.5h-2v-2h-1v2h-2v1h2v2h1v-2h2v-1z"/></svg>
+											{{ lang.buy_now }}
 										</a>
 									</div>
 									<ul class="global-list d-flex">
@@ -257,7 +259,7 @@
 								<a target="_blank" :href="productDetails.external_link" class="btn btn-primary btn-block">{{ lang.see_details }}</a>
 							</div>
 
-							<div class="product-details-policy product-border mt-4" v-if="addons.includes('refund')">
+							<div class="product-details-policy product-border mt-4" v-if="addons.includes('refund') && productDetails.is_refundable == '1'">
 								<div class="related-product-shop">
 									<div class="related-product-thumb text-center">
 										<img :src="settings.refund_sticker" alt="Product" class="img-fluid" />
@@ -299,7 +301,7 @@
                 <single_seller  :shop="productDetails.seller"></single_seller>
               </ul>
 							<div class="product-offer" v-if="settings.product_details_site_banner">
-								<img v-lazy="settings.product_details_site_banner" alt="banner-image" class="img-fluid" />
+								<img loading="lazy" :src="settings.product_details_site_banner" alt="banner-image" class="img-fluid" />
 							</div>
 							<div class="product-widget-recent-entries" v-if="productDetails.sidebar_products.length > 0">
 								<h4>{{ lang.recent_products }}</h4>
@@ -308,7 +310,7 @@
 										<div class="shop">
 											<div class="thumb">
 												<router-link :to="{ name: 'product.details', params: { slug: product.slug } }">
-													<img v-lazy="product.image_40x40" :alt="product.slug" class="img-fluid" />
+													<img loading="lazy" :src="product.image_40x40" :alt="product.slug" class="img-fluid" />
 												</router-link>
 											</div>
 											<div class="info">
@@ -357,7 +359,7 @@
 							<div v-if="productDetails.language_product" v-html="productDetails.language_product.description"></div>
 							<div class="text-center" v-if="productDetails.description_image.length > 0">
 								<div class="mt-3" v-for="(image, index) in productDetails.description_image" :key="index">
-									<img v-lazy="image" :alt="productDetails.product_name" />
+									<img loading="lazy" :src="image" :alt="productDetails.product_name" />
 								</div>
 							</div>
 						</div>
@@ -396,7 +398,9 @@
 									<li v-for="(review, index) in reviews.data" :key="'review' + index">
 										<div class="comment_info">
 											<div class="commenter-avatar" v-if="review.user">
-												<router-link :to="{ name: 'dashboard' }"><img class="img-fluid" v-if="review.user.profile_image" v-lazy="review.user.profile_image" :alt="review.user.full_name" /> </router-link>
+												<router-link :to="{ name: 'dashboard' }">
+                          <img class="img-fluid" v-if="review.user.profile_image" loading="lazy" :src="review.user.profile_image" :alt="review.user.full_name"/>
+                        </router-link>
 											</div>
 											<div class="comment-box">
 												<div class="comment-title" v-if="review.user">
@@ -413,15 +417,15 @@
 															>
 														</ul>
 													</div>
-													<a class="float-end" v-if="review.user_id == authUser.id" @click="editReview(review)" href="javascript:void(0)">{{ lang.edit }}</a>
+													<a class="float-end" v-if="authUser && review.user_id == authUser.id" @click="editReview(review)" href="javascript:void(0)">{{ lang.edit }}</a>
 												</div> </div
 											><!-- /.comment-box -->
 											<p>{{ review.comment }}</p>
 											<div class="selected-media mt-0 m-2" v-if="review.images">
-												<img v-lazy="review.image_link" :alt="productDetails.product_name" class="img-thumbnail" width="100" />
+												<img loading="lazy" :src="review.image_link" :alt="productDetails.product_name" class="img-thumbnail" width="100" />
 											</div>
 											<div class="comment-icon">
-												<ul class="global-list">
+												<ul class="global-list" v-if="authUser">
 													<li v-if="alreadyLiked(review.review_likes)"
 														><a href="javascript:void(0)" @click="unLike(review.id)" :class="{ disable_btn: like_loading }">
 															<span class="mdi mdi-thumb-up"></span>
@@ -460,7 +464,7 @@
 												<li v-for="(reply, index) in review.replies" :key="'reply' + index">
 													<div class="comment_info">
 														<div class="commenter-avatar" v-if="reply.user">
-															<router-link :to="{ name: 'dashboard' }"><img class="img-fluid" v-lazy="reply.user.profile_image" :alt="reply.user.full_name" /></router-link>
+															<router-link :to="{ name: 'dashboard' }"><img class="img-fluid" loading="lazy" :src="reply.user.profile_image" :alt="reply.user.full_name" /></router-link>
 														</div>
 														<div class="comment-box">
 															<div class="comment-title">
@@ -514,7 +518,7 @@
 												</label>
 												<label class="upload-image upload-text d-flex loader-bdr" for="upload-2">
 													<input type="file" id="upload-2" @change="imageUp($event)" />
-													<img v-lazy="getUrl('public/images/others/env.svg')" :alt="productDetails.product_name" class="img-fluid" />
+													<img loading="lazy" :src="getUrl('public/images/others/env.svg')" :alt="productDetails.product_name" class="img-fluid" />
 													{{ lang.upload }}
 												</label>
 											</div>
@@ -589,7 +593,6 @@ export default {
 				price: 0,
 				special_discount_check: 0,
 			},
-
 			slick_settings: {
 				dots: false,
 				edgeFriction: 0.35,
@@ -663,7 +666,14 @@ export default {
 			seconds: 0,
       index: null,
       large_image: '',
-      current_index: 0
+      current_index: 0,
+      colors: [],
+      attribute_list: [],
+      attribute_values: [],
+      attribute_selector: 0,
+      selected_stock: [],
+      allowed_attributes: [],
+      attributes_fetched : false
 		};
 	},
 	components: {
@@ -687,6 +697,10 @@ export default {
 			this.product_form.color_id = this.productDetails.form.color_id;
 			this.product_form.attribute_values = this.productDetails.form.attribute_values;
       this.large_image = this.productDetails.gallery.large[0];
+      if(this.productDetails.attribute_selector == 1)
+      {
+        this.getAttributes();
+      }
 		}
 	},
 
@@ -701,8 +715,11 @@ export default {
 				this.product_form.sku = this.productDetails.form.sku;
 				this.product_form.variants_name = this.productDetails.form.variants_name;
 				this.product_form.id = this.productDetails.form.id;
-				this.product_form.color_id = this.productDetails.form.color_id;
         this.large_image = this.productDetails.gallery.large[0];
+        if(this.productDetails.attribute_selector == 1)
+        {
+          this.getAttributes();
+        }
 			}
 		},
     index(){
@@ -859,55 +876,93 @@ export default {
 			}
 			return this.priceFormat(price * this.product_form.quantity);
 		},
-		attributeSelect() {
-			let formData = {
-				color_id: this.product_form.color_id,
-				product_id: this.productDetails.id,
-				attribute_ids: this.product_form.attribute_values,
-			};
-			/* if (!formData.color_id || this.product_form.attribute_values.filter(String).length != this.attributes.length) {
+		attributeSelect(el,index,value) {
+      let selected_attribute = 0;
+
+      if (this.product_form.attribute_values.length > 0) {
+        selected_attribute += this.product_form.attribute_values.length;
+      }
+
+      if (this.product_form.color_id) {
+        selected_attribute++;
+      }
+      if (index)
+      {
+        this.selected_stock[index] = value;
+      }
+      if (selected_attribute < this.productDetails.attribute_selector) {
+        if (selected_attribute+1 == this.productDetails.attribute_selector)
+        {
+          return this.getAttributes(value);
+        }
         return false;
-      }*/
-
-			let url = this.getUrl("find/products-variants");
-			axios.post(url, formData).then((response) => {
-				if (response.data.error) {
-					toastr.error(response.data.error, this.lang.Error + " !!");
-				} else {
-					if (response.data.images) {
-						this.currentCarousel = response.data.images["image_72x72_0"];
-
-						for (let i = 0; i < this.productDetails.gallery.length; i++) {
-							if (this.productDetails.gallery[i] == response.data.images["image_320x320"]) {
-								this.productDetails.gallery[i] = response.data.images["image_320x320"];
-								this.clickedSlide = i;
-							}
-						}
-					}
-					if (response.data.product_stock) {
-						this.productDetails.product_stock.current_stock = response.data.product_stock.current_stock;
-						this.productDetails.product_stock.sku = response.data.product_stock.sku;
-						this.productDetails.product_stock.price = response.data.product_stock.price;
-						this.productDetails.product_stock.discount_percentage = response.data.product_stock.discount_percentage;
-						this.product_form.variants_ids = response.data.product_stock.variant_ids;
-						this.product_form.variants_name = response.data.product_stock.name;
-					} else {
-						toastr.error(response.data.msg, this.lang.Error + " !!");
-					}
-				}
-			});
+      }
+      return this.fetchAttributeStock(value);
 		},
-		valuesByAttribute(id) {
-			let attributes = [];
+		fetchAttributeStock(value) {
+      let formData = {
+        color_id: this.product_form.color_id,
+        product_id: this.productDetails.id,
+        variant_ids: this.selected_stock,
+        selected_variant: value,
+      };
 
-			for (let i = 0; i < this.productDetails.attribute_values.length; i++) {
-				if (id == this.productDetails.attribute_values[i]["attribute_id"]) {
-					attributes.push(this.productDetails.attribute_values[i]);
-				}
-			}
+      let url = this.getUrl("find/products-variants");
+      axios.post(url, formData).then((response) => {
+        if (response.data.error) {
+          toastr.error(response.data.error, this.lang.Error + " !!");
+        } else {
+          if (response.data.images) {
+            this.currentCarousel = response.data.images["image_72x72_0"];
 
-			return attributes;
+            for (let i = 0; i < this.productDetails.gallery.length; i++) {
+              if (this.productDetails.gallery[i] == response.data.images["image_320x320"]) {
+                this.productDetails.gallery[i] = response.data.images["image_320x320"];
+                this.clickedSlide = i;
+              }
+            }
+          }
+          if (response.data.product_stock) {
+            this.productDetails.product_stock.current_stock = response.data.product_stock.current_stock;
+            this.productDetails.product_stock.sku = response.data.product_stock.sku;
+            this.productDetails.product_stock.price = response.data.product_stock.price;
+            this.productDetails.product_stock.discount_percentage = response.data.product_stock.discount_percentage;
+            this.product_form.variants_ids = response.data.product_stock.variant_ids;
+            this.product_form.variants_name = response.data.product_stock.name;
+          } else {
+            toastr.error(response.data.msg, this.lang.Error + " !!");
+          }
+        }
+      });
 		},
+    getAttributes()
+    {
+      let formData = {
+        color_id: this.product_form.color_id,
+        product_id: this.productDetails.id,
+        variant_ids: this.selected_stock
+      };
+
+      let url = this.getUrl("find/variants");
+      axios.post(url, formData).then((response) => {
+        this.allowed_attributes = response.data.variants;
+        this.attributes_fetched = true;
+      })
+    },
+    checkDisable(index,value)
+    {
+      if(this.attributes_fetched)
+      {
+        if (this.productDetails.product_colors.length > 0 && this.productDetails.attribute_values.length > 0)
+        {
+          return this.productDetails.attribute_selector == index+2 && !this.allowed_attributes.includes(value.id);
+        }
+        else{
+          return this.productDetails.attribute_selector == index+1 && !this.allowed_attributes.includes(value.id);
+        }
+      }
+      return false;
+    },
 		cartPlus() {
 			if (this.product_form.quantity != this.firstStock.stock && this.product_form.quantity < this.firstStock.stock) {
 				this.product_form.quantity++;
@@ -922,7 +977,17 @@ export default {
 				toastr.warning(this.lang.please_order_minimum_of + " " + this.productDetails.minimum_order_quantity + " " + this.lang.Quantity, this.lang.Warning + " !!");
 			}
 		},
-		addToCart(min_qty, buy) {
+		addToCart(min_qty, buy,is_buy_now) {
+
+      if(this.productDetails.has_variant && !this.product_form.variants_ids)
+      {
+        return toastr.error(this.lang.please_select_all_attributes, this.lang.Error + " !!");
+      }
+      if(is_buy_now == 1){
+        this.product_form.is_buy_now = 1
+      }else{
+        this.product_form.is_buy_now = 0
+      }
 			let carts = this.carts;
 			let url = this.getUrl("user/addToCart");
 			axios.post(url, this.product_form).then((response) => {
@@ -938,7 +1003,7 @@ export default {
 					this.resetForm();
 					this.product_form.quantity = min_qty;
 					if (buy) {
-						this.$router.push({ name: "checkout" });
+						this.$router.push({ name: "checkout"});
 					} else {
 						this.added_to_cart = true;
 						setTimeout(() => {

@@ -1,7 +1,7 @@
 <template>
 	<section class="products-section category-products bg-white" v-if="lengthCounter(products) > 0">
 		<div class="container">
-			<div v-if="offer_ending_products && offer_ending_products.length > 0" class="title justify-content-between">
+			<div v-if="offer_ending_products && offer_ending_products.length > 0" class="title justify-content-between" :class="{ 'title-bg' : addons.includes('ishopet') }">
 				<h1>{{ lang.offer_ending_soon }}</h1>
 				<a href="javascript:void(0)" @click="navigator">{{ lang.more_products }} <span class="icon mdi mdi-name mdi-arrow-right"></span></a>
 			</div>

@@ -12,8 +12,7 @@
 						</div>
 					</a>
 					<div class="product-info">
-						<span class="price"
-							><del v-if="product.special_discount_check > 0">{{ priceFormat(product.price) }}</del>
+						<span class="price"><del v-if="product.special_discount_check > 0">{{ priceFormat(product.price) }}</del>
 							<span v-if="product.special_discount_check > 0">
 								{{ priceFormat(product.discount_percentage) }}
 							</span>
@@ -24,7 +23,7 @@
 								{{ product.product_name }}
 							</a>
 						</h1>
-						<div class="sg-rating">
+						<div class="sg-rating" v-if="!addons.includes('ishopet')">
 							<star-rating v-model:rating="product.rating" :read-only="true" :star-size="12" :round-start-rating="false"></star-rating>
 							<span class="reviews" v-if="product.reviews_count > 0">({{ product.reviews_count }} {{ lang.reviews }})</span>
 						</div>

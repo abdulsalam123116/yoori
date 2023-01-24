@@ -1,5 +1,5 @@
 <template>
-  <form action="#" class="yoori__signup--form">
+  <div class="yoori__signup--form" :class="{ 'error_border' : phone_error }">
     <div class="country__code--config" @click.stop="activeDropDown">
       <div class="country__code--config-details">
                 <span class="country__code--flag">
@@ -14,7 +14,7 @@
         <input placeholder="Search" v-model="search_key" @keyup="countrySearch" type="text" class="country__search">
         <li v-for="(country,index) in filtered_countries" @click="getCountryCode(country)">
                         <span class="country__code--flag">
-                          <img v-lazy="country.flag_icon" alt="Flag" class="img-fluid">
+                          <img loading="lazy" :src="country.flag_icon" alt="Flag" class="img-fluid">
                         </span>
           <span class="country__name">
                           <strong>{{ country.name }}</strong>
@@ -25,13 +25,15 @@
         </li>
       </ul>
     </div> <!-- /.country__code--config -->
-    <input type="tel" class="number" @keyup="getNum" v-model="phone_no">
-  </form>
+    <input type="tel" class="number" @keyup="$emit('phone_no', phone_no)" v-model="phone_no">
+    <input type="hidden" v-model="country_id">
+  </div>
 </template>
 
 <script>
 export default {
   name: "telephone",
+  props : ['phone_error'],
 
   data() {
     return {
@@ -46,7 +48,8 @@ export default {
       activeClass: 'hideShow',
       phone_no: '',
       count: 1,
-      filtered_countries: []
+      filtered_countries: [],
+      country_id: [],
 
     }
   },
@@ -58,6 +61,7 @@ export default {
   },
   mounted() {
     this.country();
+    this.country_id = this.settings.default_country;
   },
   computed: {
     phone() {
@@ -92,6 +96,7 @@ export default {
         this.defaultCountry.code = code;
         this.defaultCountry.name = 'Bangladesh';
       } else {
+        this.country_id = country.id;
         if (country.phonecode.includes("+")) {
           this.defaultCountry.code = country.phonecode;
         } else {
@@ -99,8 +104,7 @@ export default {
         }
         this.defaultCountry.name = country.name;
       }
-
-
+      this.phone_no = this.defaultCountry.code;
     },
     activeDropDown() {
       if (this.activeClass == 'hideShow') {
@@ -118,19 +122,14 @@ export default {
     },
     countrySearch() {
       let res;
-      res = this.countries.filter((d) => d.name);
+      res = this.countries.filter((d) => d.name || d.phonecode);
       this.filtered_countries = res.filter(
           (d) =>
-              (d.name && d.name.toLowerCase().includes(this.search_key))
+              (d.name && d.name.toLowerCase().includes(this.search_key) || d.phonecode.includes(this.search_key))
       );
       return this.filtered_countries;
     },
     getNum() {
-      if (this.count == 1) {
-        this.phone_no = this.defaultCountry.code + this.phone_no
-      } else if (this.phone_no == '') {
-        this.phone_no = this.defaultCountry.code + this.phone_no
-      }
       this.$emit('phone_no', this.phone_no);
       this.count++
     },
@@ -145,10 +144,10 @@ export default {
           if (response.data.error) {
             toastr.error(response.data.error, this.lang.Error + ' !!');
           } else {
-            this.$store.commit('setCountryList',response.data.countries)
+            this.$store.commit('setCountryList',response.data.countries);
             this.filtered_countries = response.data.countries;
-            let country = this.countries.find(el => el.iso2 == this.settings.default_country);
-            this.getCountryCode(country)
+            let country = this.countries.find(el => el.id == this.settings.default_country);
+            this.getCountryCode(country);
           }
         });
       }

@@ -30,7 +30,7 @@
                                 <span class="validation_error" v-if="errors.email">{{ errors.email[0] }}</span>
 
                                 <div class="mb-4">
-                                  <telePhone  @phone_no="getNumber"></telePhone>
+                                  <telePhone  @phone_no="getNumber" :phone_error="errors.phone ? errors.phone[0] : null"></telePhone>
                                     <span class="validation_error" v-if="errors.phone">{{ errors.phone[0] }}</span>
                                 </div>
                                 <div class="form-group">

@@ -1,12 +1,14 @@
 <template>
 	<section class="sg-seller-product best-shop item-space-rmv" v-if="lengthCounter(countShop) > 0">
 		<div class="container">
-			<div class="title">
+			<div class="title" :class="{ 'title-bg' : addons.includes('ishopet') }">
 				<h1>{{ lang.brand_shops }}</h1>
 			</div>
-			<VueSlickCarousel class="global-list" v-bind="slick_settings" :rtl="settings.text_direction == 'rtl'">
-        <single_seller v-for="(shop, i) in express_shop" :key="i" :shop="shop"></single_seller>
-      </VueSlickCarousel>
+			<div :class="{ 'slider-arrows' : addons.includes('ishopet') }">
+				<VueSlickCarousel class="global-list" v-bind="slick_settings" :rtl="settings.text_direction == 'rtl'">
+					<single_seller class="slider_div" v-for="(shop, i) in express_shop" :key="i" :shop="shop"></single_seller>
+				</VueSlickCarousel>
+			</div>
 		</div>
 		<!-- /.container -->
 	</section>
@@ -42,7 +44,7 @@ export default {
 				dots: false,
 				edgeFriction: 0.35,
 				infinite: true,
-				arrows: false,
+				arrows: true,
 				autoplay: false,
 				adaptiveHeight: true,
 				slidesToShow: 4,
@@ -65,8 +67,8 @@ export default {
 					{
 						breakpoint: 480,
 						settings: {
-							slidesToShow: 2,
-							slidesToScroll: 2,
+							slidesToShow: 1,
+							slidesToScroll: 1,
 						},
 					},
 					{

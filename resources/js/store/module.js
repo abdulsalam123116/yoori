@@ -59,6 +59,7 @@ const getDefaultState = () => {
         allBrands:[],
         allSellers:[],
         default_assets:{},
+        settings: '',
         userAddresses:{},
         url: document.getElementById('base_url').value,
 

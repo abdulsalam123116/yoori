@@ -7,7 +7,7 @@
           <user_sidebar :current="current"></user_sidebar>
           <div class="col-lg-9">
             <div class="profile-banner-image">
-              <a href="#"><img v-lazy="settings.user_dashboard_banner" alt="profile-banner"></a>
+              <a href="#"><img loading="lazy" :src="settings.user_dashboard_banner" alt="profile-banner"></a>
             </div>
             <div class="title justify-between">
               <h1>{{ lang.dashboard }}</h1>
@@ -382,7 +382,7 @@
                                  value="offline_method"
                                  name="radio" v-model="payment_form.payment_type">
                           <label :for="'offline'+offline.id">
-                            <img v-lazy="offline.image" :alt="offline.name"
+                            <img loading="lazy" :src="offline.image" :alt="offline.name"
                                  class="img-fluid">
                             {{ offline.name }}
                           </label>
@@ -514,7 +514,7 @@
                       </label>
                       <label class="upload-image upload-text" for="upload-2">
                         <input type="file" id="upload-2" @change="imageUp($event)">
-                        <img v-lazy="getUrl('public/images/others/env.svg')" alt="file up icon"
+                        <img loading="lazy" :src="getUrl('public/images/others/env.svg')" alt="file up icon"
                              class="img-fluid">
                         {{ lang.upload }}
                       </label>

@@ -21,6 +21,7 @@ export default Vue.mixin({
                 variants_name: '',
                 trx_id: '',
                 image_text: 'Choose File',
+                is_buy_now: 0,
             },
             payment_form: {
                 payment_type: '',
@@ -36,6 +37,7 @@ export default Vue.mixin({
             converted_reward: '',
             blog_like_loading: false,
             search_products: [],
+            stock: [],
             btn_disabled: false,
         }
     },
@@ -212,13 +214,18 @@ export default Vue.mixin({
 
             this.payment_form.coupon = [];
         },
-        priceFormat(amount) {
+        priceFormat(amount,only_amount) {
             // amount = amount/this.defaultCurrency.exchange_rate;
             amount = amount * this.activeCurrency.exchange_rate;
 
+            if (only_amount)
+            {
+                return amount;
+            }
+
             let no_of_decimals, decimal_separator, thousands_separator, currency_symbol_format, fixed_amount,
                 formatted_amount = '';
-            no_of_decimals = this.settings.no_of_decimals ? this.settings.no_of_decimals : 2;
+            no_of_decimals = this.settings.no_of_decimals;
 
             decimal_separator = this.settings.decimal_separator ? this.settings.decimal_separator : '.';
             thousands_separator = decimal_separator == ',' ? '.' : ',';
@@ -322,6 +329,33 @@ export default Vue.mixin({
             var p = Math.pow(10, decimalPlaces);
             var n = (num * p) * (1 + Number.EPSILON);
             return Math.round(n) / p;
+        },
+        checkEl(event)
+        {
+            let element = event.target;
+            let moved
+            let downListener = () => {
+                moved = false
+            }
+            element.addEventListener('mousedown', downListener)
+            let moveListener = () => {
+                moved = true
+            }
+            element.addEventListener('mousemove', moveListener)
+            let upListener = () => {
+                if (moved) {
+                    console.log('moved')
+                } else {
+                    console.log('not moved')
+                }
+            }
+            element.addEventListener('mouseup', upListener)
+
+// release memory
+            element.removeEventListener('mousedown', downListener)
+            element.removeEventListener('mousemove', moveListener)
+            element.removeEventListener('mouseup', upListener)
+            event.preventDefault();
         }
     }
 });

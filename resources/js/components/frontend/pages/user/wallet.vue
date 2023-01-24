@@ -327,7 +327,7 @@
                                  value="offline_method"
                                  name="radio" v-model="payment_form.payment_type">
                           <label :for="'offline'+offline.id">
-                            <img v-lazy="offline.image" :alt="offline.name"
+                            <img loading="lazy" :src="offline.image" :alt="offline.name"
                                  class="img-fluid">
                             {{ offline.name }}
                           </label>
@@ -461,7 +461,7 @@
                       </label>
                       <label class="upload-image upload-text" for="upload-2">
                         <input type="file" id="upload-2" @change="imageUp($event)">
-                        <img v-lazy="getUrl('public/images/others/env.svg')" alt="file upload icon"
+                        <img loading="lazy" :src="getUrl('public/images/others/env.svg')" alt="file upload icon"
                              class="img-fluid">
                         {{ lang.upload }}
                       </label>

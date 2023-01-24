@@ -1,12 +1,12 @@
 <template>
 	<section class="sg-seller-product sg-feature-shop item-space-rmv" v-if="lengthCounter(countShop) > 0">
 		<div class="container">
-			<div class="title">
+			<div class="title" :class="{ 'title-bg' : addons.includes('ishopet') }">
 				<h1>{{ lang.featured_shops }}</h1>
 			</div>
 			<div class="sg-category-content sg-filter" :class="list_class">
 				<ul class="products grid-4">
-          <single_seller v-for="(shop, i) in featured_shop" :key="i" :shop="shop"></single_seller>
+          <single_seller class="slider_div" v-for="(shop, i) in featured_shop" :key="i" :shop="shop"></single_seller>
         </ul>
 			</div>
     </div><!-- /.container -->

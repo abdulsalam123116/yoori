@@ -3,8 +3,8 @@ require('./bootstrap');
 // window.Vue = require('vue');
 import Vue from 'vue/dist/vue'
 Vue.config.productionTip = false;
-// Vue.config.devtools = false;
-
+Vue.config.devtools = false;
+Vue.config.debug = false;
 // coolLightBox
 import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
@@ -12,6 +12,9 @@ import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 Vue.use(CoolLightBox);
 //vue-router
 import VueRouter from 'vue-router'
+
+import VueObserveVisibility from 'vue-observe-visibility'
+Vue.use(VueObserveVisibility)
 
 Vue.use(VueRouter);
 //vue-axios
@@ -25,9 +28,6 @@ Vue.use(VueAxios, axios)
 import vSelect from 'vue-select';
 Vue.component('v-select', vSelect);
 
-import ProductZoomer from 'vue-product-zoomer';
-Vue.use(ProductZoomer);
-
 //Vuex
 import Vuex from 'vuex'
 
@@ -36,12 +36,7 @@ import VuePlyr from 'vue-plyr';
 
 Vue.use(VuePlyr, {
     plyr: {}
-})
-
-//lazy loader
-import VueLazyload from 'vue-lazyload'
-
-Vue.use(VueLazyload)
+});
 
 import storeData from './store/index';
 import module from './store/module';
@@ -60,7 +55,7 @@ import objectToFormData from "./objectToFormData";
 window.objectToFormData = objectToFormData;
 
 Vue.component('frontend_master', require('./components/frontend/frontend_master').default);
-Vue.component('loading_button', require('./components/frontend/partials/loading_button').default);
+Vue.component('loading_button', () => import('./components/frontend/partials/loading_button'));
 
 import VueProgressBar from 'vue-progressbar'
 
@@ -121,16 +116,19 @@ const router = new VueRouter({
     }
 });
 
-/*import VueAnalytics from 'vue-analytics';
-//and then use it in main.js
-Vue.use(VueAnalytics, {
-    id: 'G-H8TSCP96R5',
-    routes
-});*/
-
-const app = new Vue({
+new Vue({
     el: '#app',
     router,
     mixins: [helper],
     store,
-}).$mount('#app');
+});
+
+router.afterEach(( to, from ) => {
+    if (window._gaq && window._gaq._getTracker) {
+        ga('set', 'page', to.path);
+        ga('send', 'pageview');
+    } else if (window.urchinTracker) {
+        ga('set', 'page', to.path);
+        ga('send', 'pageview');
+    }
+});

@@ -14,7 +14,7 @@
 									<button class="dropdown-toggle" type="button" @click.stop="languageDropdown" :class="{ show: language_dropdown }" data-bs-toggle="dropdown" aria-expanded="false">{{ activeLanguage.name }} </button>
 									<ul @click.stop class="dropdown-menu" :class="{ show: language_dropdown }" aria-labelledby="">
 										<li v-for="(language, index) in languages" :key="index">
-											<a class="dropdown-item" @click="changeLanguage(language.locale)" href="javascript:void(0)"><img v-lazy="language.flag_image" alt="flag" class="img-fluid" />{{ language.name }}</a>
+											<a class="dropdown-item" @click="changeLanguage(language.locale)" href="javascript:void(0)"><img :src="language.flag_image" alt="flag" class="img-fluid" />{{ language.name }}</a>
 										</li>
 									</ul>
 								</div>
@@ -78,10 +78,31 @@
 			><!-- /.container -->
 		</div>
 
-		<div class="header-middle">
+		<div :class="addons.includes('ishopet') ? toggleNavClass() : ''" id="middle_nav" class="header-middle">
 			<div class="container">
 				<div class="botom-content">
 					<div class="sg-logo">
+						<div class="sg-categorie-menu categorie-lg align-self-lg-center">
+							<div class="top-content" v-if="addons.includes('ishopet')">
+								<button class="sg-toggle" @click="toggleCategory">
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 18">
+										<g id="list" transform="translate(0 -3)">
+											<path id="Path_4186" data-name="Path 4186" d="M7,6H23a1,1,0,0,0,0-2H7A1,1,0,0,0,7,6Z" fill="#fff"/>
+											<path id="Path_4187" data-name="Path 4187" d="M23,11H7a1,1,0,0,0,0,2H23a1,1,0,0,0,0-2Z" fill="#fff"/>
+											<path id="Path_4188" data-name="Path 4188" d="M23,18H7a1,1,0,0,0,0,2H23a1,1,0,0,0,0-2Z" fill="#fff"/>
+											<circle id="Ellipse_349" data-name="Ellipse 349" cx="2" cy="2" r="2" transform="translate(0 3)"
+															fill="#fff"/>
+											<circle id="Ellipse_350" data-name="Ellipse 350" cx="2" cy="2" r="2" transform="translate(0 10)"
+															fill="#fff"/>
+											<circle id="Ellipse_351" data-name="Ellipse 351" cx="2" cy="2" r="2" transform="translate(0 17)"
+															fill="#fff"/>
+										</g>
+									</svg>
+								</button>
+								<!-- <span>{{ lang.all_categories }}</span> -->
+							</div>
+							<sidebar_categories v-if="addons.includes('ishopet')" ref="sidebar_category" :home="true"></sidebar_categories>
+						</div>
 						<router-link :to="{ name: 'home' }">
 							<svg v-if="settings.demo_mode" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 425.95 161.53" style="enable-background: new 0 0 425.95 161.53" xml:space="preserve">
 								<path
@@ -177,19 +198,18 @@
 
 							<li class="sg-dropdown cart">
 								<router-link :to="{ name: 'cart' }" class="">
-									<div class="icon"
-										><img alt="bag Icon" class="img-fluid" :src="getUrl('public/images/others/bag.svg')" />
-										<span v-if="carts && carts.length > 0" class="badge">{{ carts.length }}</span>
+									<div class="icon"><img alt="bag Icon" class="img-fluid" :src="getUrl('public/images/others/bag.svg')" />
+										<span v-if="carts && carts.length > 0" class="badge">{{ carts.filter(cart => cart.is_buy_now == false).length }}</span>
 									</div>
 								</router-link>
 								<div class="sg-dropdown-menu" v-if="carts && carts.length > 0">
 									<span class="title">{{ lang.cart_items }}</span>
 									<ul class="global-list">
 										<li v-for="(cart, index) in carts" :key="index">
-											<div class="sg-product">
+											<div class="sg-product" v-if="!cart.is_buy_now">
 												<span @click="deleteCart(cart.id)" class="remove-icon mdi mdi-name mdi-close"></span>
 												<div class="product-thumb">
-													<router-link :to="{ name: 'product.details', params: { slug: cart.product_slug } }"> <img v-lazy="cart.image_40x40" :alt="cart.product_name" class="img-fluid" /></router-link>
+													<router-link :to="{ name: 'product.details', params: { slug: cart.product_slug } }"> <img loading="lazy" :src="cart.image_40x40" :alt="cart.product_name" class="img-fluid" /></router-link>
 												</div>
 												<div class="product-info text-ellipse">
 													<h3 class="text-ellipse">
@@ -206,9 +226,7 @@
 												<router-link :to="{ name: 'cart' }" class="btn btn-primary">
 													{{ lang.view_cart }}
 												</router-link>
-												<router-link :to="{ name: 'checkout' }" class="btn btn-primary">
-													{{ lang.check_out }}
-												</router-link>
+                        <a :href="getUrl('checkout')" class="btn btn-primary" @click="checkoutPage($event)">{{ lang.check_out }}</a>
 											</div>
 										</li>
 									</ul>
@@ -246,7 +264,8 @@
 				</div>
 			</div>
 		</div>
-    <div class="header-menu" :class="[toggleNavClass(), settings.header_theme]" id="nav">
+
+    <div class="header-menu" :class="[toggleNavClass(), settings.header_theme]" id="nav" v-if="!addons.includes('ishopet')">
       <div class="container">
         <div class="bottom-content">
           <div class="sg-categorie-menu categorie-lg align-self-lg-center">
@@ -268,15 +287,14 @@
               </button>
               <span>{{ lang.all_categories }}</span>
             </div>
-            <sidebar_categories></sidebar_categories>
+            <sidebar_categories ref="sidebar_category" :home="1"></sidebar_categories>
           </div>
-
           <div class="right-content">
             <div class="sg-menu d-flex justify-content-between">
               <nav class="navbar navbar-expand-lg">
                 <div class="sg-logo">
                   <router-link :to="{ name: 'home' }">
-                    <img v-lazy="settings.light_logo" alt="Logo" class="img-fluid"/>
+                    <img loading="lazy" :src="settings.light_logo" alt="Logo" class="img-fluid"/>
                   </router-link>
                 </div>
                 <div class="collapse navbar-collapse" id="navbarNav" :class="{ show: menu }">
@@ -300,14 +318,12 @@
                     </li>
                   </ul>
                 </div>
-              </nav
-              ><!-- /.navbar -->
+              </nav>
+
             </div>
             <div class="offer">
               <router-link :to="{ name: 'daily.deals' }">
 								<span class="daily--icon">
-									<!-- <img v-lazy="defaultAssets.pencil_image" alt="Image" class="img-fluid"> -->
-
 									<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                        preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
 										<path
@@ -324,8 +340,9 @@
         </div>
       </div>
     </div>
+
 		<div class="sg-categorie-menu home-menu-sm">
-			<div class="sg-toggle"><span class="mdi mdi-name mdi-close"></span></div>
+			<div class="sg-toggle" @click="$store.commit('setSmCategory', !smCategory)"><span class="mdi mdi-name mdi-close"></span></div>
 			<div class="categorie-menu-content">
 				<div class="sg-logo">
 					<router-link :to="{ name: 'home' }">
@@ -655,18 +672,12 @@ export default {
 				}
 			}
 		},
-		toggleCategory() {
-			if (this.defaultCategoryShow == false) {
-				document.body.classList.add("sidebar-active");
-				this.$store.dispatch("defaultCategoryShow", true);
-			} else {
-				document.body.classList.remove("sidebar-active");
-				this.$store.dispatch("defaultCategoryShow", false);
-			}
-		},
+
     toggleNavClass() {
       return {
         "fixed-top": this.navbar_class,
+        "sticky-bg": this.addons.includes('ishopet'),
+        "ishopet-header": this.addons.includes('ishopet'),
       };
     },
 		changeLanguage(locale) {
@@ -789,6 +800,20 @@ export default {
 		topBanner() {
 			localStorage.setItem("top-banner", "1");
 		},
+    toggleCategory() {
+      if (this.defaultCategoryShow == false) {
+        document.body.classList.add("sidebar-active");
+        this.$store.dispatch("defaultCategoryShow", true);
+      } else {
+        document.body.classList.remove("sidebar-active");
+        this.$store.dispatch("defaultCategoryShow", false);
+      }
+    },
+    checkoutPage(event) {
+      event.preventDefault();
+      if (this.$route.name != 'checkout')
+        this.$router.push({ name: "checkout",query : { cart_page : 1 } });
+    },
 	},
 };
 </script>

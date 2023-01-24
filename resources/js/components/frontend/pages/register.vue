@@ -4,7 +4,7 @@
       <div class="container">
         <div class="account-content">
           <div class="thumb">
-            <img v-lazy="settings.sign_up_banner" :alt="form.user_type" class="img-fluid img-fit"/>
+            <img :src="settings.sign_up_banner" loading="lazy" :alt="form.user_type" class="img-fluid img-fit"/>
           </div>
           <div class="form-content">
             <h1>{{ lang.sign_up }} </h1>
@@ -41,7 +41,7 @@
                   <!--                                    <vue-tel-input v-bind="bindProps" class="form-control phone_intl"-->
                   <!--                                                   :class="{ 'error_border mb-0' : errors.phone }"-->
                   <!--                                                   v-model="form.phone"></vue-tel-input>-->
-                  <telePhone @phone_no="getNumber"></telePhone>
+                  <telePhone @phone_no="getNumber" :phone_error="errors.phone ? errors.phone[0] : null"></telePhone>
 
                   <span class="validation_error" v-if="errors.phone">{{ errors.phone[0] }}</span>
                 </div>

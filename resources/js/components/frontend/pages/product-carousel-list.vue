@@ -1,8 +1,8 @@
 <template>
-	<div class="flash_sale">
+	<div class="flash_sale" :class="{ 'slider-arrows' : addons.includes('ishopet') }">
 		<VueSlickCarousel v-bind="slick_settings" :rtl="settings.text_direction == 'rtl'" ref="carousel" @reInit="swipeSlide">
-			<div v-for="(product, index) in products" class="padding_17 grid-2">
-				<div class="sg-product" :class="{ 'style-1': type == 'flash' }">
+			<div v-for="(product, index) in products" :key="index" class="padding_17 grid-2">
+				<div class="sg-product slider_div" :class="{ 'style-1': type == 'flash' }">
 					<a :href="'product/' + product.slug" @click.prevent="routerNavigator('product.details', product.slug)">
             <div class="product-thumb">
                             <span class="base" v-if="product.special_discount_check > 0">{{
@@ -31,7 +31,7 @@
 									{{ product.product_name }}
 								</a>
 							</h1>
-							<div class="sg-rating">
+							<div class="sg-rating" v-if="!addons.includes('ishopet')">
 								<star-rating v-model:rating="product.rating" :read-only="true" :star-size="12" :round-start-rating="false"></star-rating>
 								<span class="reviews" v-if="product.reviews_count > 0">({{ product.reviews_count }} {{ lang.reviews }})</span>
 							</div>
@@ -84,7 +84,7 @@ export default {
 		StarRating,
 		shimmer,
 		detailsView,
-		VueSlickCarousel,
+		VueSlickCarousel
 	},
 	data() {
 		return {
@@ -95,7 +95,7 @@ export default {
 				dots: false,
 				infinite: true,
 				initialSlide: 0,
-				arrows: false,
+				arrows: true,
 				rows: 2,
 				cssEase: "linear",
 				slidesToShow: 2,
@@ -293,7 +293,7 @@ export default {
         if (this.$refs.carousel)
 				  this.$refs.carousel.pause();
 			}, 1000);
-		},
+		}
 	},
 };
 </script>ap

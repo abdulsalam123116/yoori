@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <li @mousedown="checkEl($event)">
     <div class="sg-product">
       <!-- <span class="mdi mdi-name mdi-heart-outline"></span> -->
       <div class="product-thumb">
@@ -21,10 +21,10 @@
           <h3><a :href="getUrl('shop/' + shop.slug)"
                  @click.prevent="routerNavigator('shop', shop.slug)">{{ shop.shop_name }}</a></h3>
           <div class="sg-rating">
-            <span class="pe-2 fw-bold">{{ shop.rating_count }}</span>
+            <span class="pe-2 fw-bold">{{ shop.rating }}</span>
             <star-rating class="pb-1 seller_min_margin" v-model:rating_count="shop.rating_count" :read-only="true"
                          :star-size="12" :round-start-rating="false"></star-rating>
-            <span>({{ shop.reviews_count }} {{ lang.ratings }})</span>
+            <span class="review-count">({{ shop.reviews_count }} {{ lang.ratings }})</span>
           </div>
         </div>
         <div class="product-info-bottom">

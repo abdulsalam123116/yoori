@@ -8,7 +8,7 @@
           <div class="modal-content">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body">
-              <div class="row">
+              <div class="row align-items-center">
                 <div class="col-md-6">
                   <img :src="settings.popup_image" :alt="settings.popup_title" class="img-fluid">
                 </div>
@@ -39,7 +39,7 @@
                           class="mdi mdi-youtube"></span></a></li>
                     </ul>
                   </div>
-                  <div class="left-content margin_left_75">
+                  <div class="left-content">
                     <form class="form-checkbox">
                       <div class="form-group">
                         <input type="checkbox" id="tnc" value="2"
@@ -62,6 +62,7 @@
 
 export default {
   name: "frontend_master",
+
   data() {
     return {
       form: {
@@ -83,7 +84,10 @@ export default {
       alert('Something went wrong with your Script, Please contact to the script author');
     }
     setTimeout(() => {
-      this.changeCurrency(this.active_currency);
+      if (!this.addons.includes('ishopet'))
+      {
+        this.changeCurrency(this.active_currency);
+      }
       this.showModal();
       this.viewedProducts();
     }, 10000);
@@ -259,15 +263,26 @@ export default {
       })
     },
     changeCurrency(currency) {
-      let url = this.getUrl("change/currency/" + currency.code);
-      this.currency_dropdown = false;
-      axios.get(url).then((response) => {
-        if (response.data.error) {
-          toastr.info(response.data.error, this.lang.Info + " !!");
-        } else {
-          this.$store.dispatch("activeCurrency", response.data.active_currency);
-        }
-      });
+      if (this.addons.includes('ishopet')) {
+        axios.get(this.getUrl('get/geolocale'))
+            .then((response) => {
+              this.$store.dispatch("activeCurrency", response.data.currency);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+      }
+      else{
+        let url = this.getUrl("change/currency/" + currency.code);
+        this.currency_dropdown = false;
+        axios.get(url).then((response) => {
+          if (response.data.error) {
+            toastr.info(response.data.error, this.lang.Info + " !!");
+          } else {
+            this.$store.dispatch("activeCurrency", response.data.active_currency);
+          }
+        });
+      }
     },
   }
 }
