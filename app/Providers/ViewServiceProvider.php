@@ -22,7 +22,7 @@ class ViewServiceProvider extends ServiceProvider
             'App\Http\View\Composers\LocaleLanguageComposer'
         );
         View::composer(
-            ['admin.partials.header','admin.partials.header'],
+            ['admin.partials.header'],
             'App\Http\View\Composers\NotificationComposer'
         );
     }

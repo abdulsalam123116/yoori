@@ -1512,7 +1512,7 @@
     "Enter Phone Number": "أدخل رقم الهاتف",
     "Branch": "فرع",
     "Enter Branch": "أدخل الفرع",
-    "A\/C number": "عدد",
+    "A/C number": "رقم الحساب",
     "Enter Account Number": "أدخل رقم الحساب",
     "Routing No": "التوجيه لا",
     "Enter Routing No": "أدخل رقم التوجيه",
@@ -2866,5 +2866,6 @@
     "REVE Systems Api Key": "مفتاح واجهة برمجة تطبيقات أنظمة REVE",
     "REVE Systems Secret": "ريف سيستمز سيكريت",
     "REVE Systems": "الأنظمة REVE",
-    "REVE Systems SMS credentials.": "ملحوظة: يمكنك تمكين هذه الخدمة عند تكوين بيانات اعتماد REVE Systems SMS"
+    "REVE Systems SMS credentials.": "ملحوظة: يمكنك تمكين هذه الخدمة عند تكوين بيانات اعتماد REVE Systems SMS",
+    "weekly_best_products": "أفضل المنتجات الأسبوعية"
 }

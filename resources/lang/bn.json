@@ -1544,7 +1544,7 @@
     "Enter Phone Number": "ফোন নম্বর লিখুন",
     "Branch": "শাখা",
     "Enter Branch": "শাখায় প্রবেশ করুন",
-    "A\/C number": "সংখ্যা",
+    "A/C number": "A/C নম্বর",
     "Enter Account Number": "অ্যাকাউন্ট নম্বর লিখুন",
     "Routing No": "রাউটিং নং",
     "Enter Routing No": "রাউটিং নম্বর লিখুন",
@@ -2849,6 +2849,7 @@
     "REVE Systems Api Key": "রিভ সিস্টেমস এপিআই কী",
     "REVE Systems Secret": "রিভ সিস্টেম সিক্রেট",
     "REVE Systems": "রিভ সিস্টেম",
+    "weekly_best_products": "সাপ্তাহিক সেরা পণ্য",
     "REVE Systems SMS credentials.": "N.B: আপনি যখন REVE Systems SMS শংসাপত্রগুলি কনফিগার করবেন তখন আপনি এই পরিষেবাটি সক্রিয় করতে পারেন"
 
 

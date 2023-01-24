@@ -32,7 +32,7 @@ class AppSettingUtility
     public static function addons()
     {
         return Cache::rememberForever('addons', function (){
-            return Addon::all()->where('status', 1);
+            return Addon::where('status', 1)->get();
         });
     }
     public static function languages()

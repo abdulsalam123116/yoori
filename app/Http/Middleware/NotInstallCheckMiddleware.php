@@ -18,13 +18,7 @@ class NotInstallCheckMiddleware
         }
 
         if (Schema::hasTable('settings') && Schema::hasTable('users') && isInstalled()) {
-            if (request()->ajax()) {
-                return response()->json([
-                    'error' => __('Looks like You have already installed this application. If You face any difficulty, please contact to the script author.'),
-                ]);
-            } else {
-                return redirect('/');
-            }
+            return redirect('/');
         }
         return $next($request);
     }

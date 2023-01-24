@@ -36,3 +36,21 @@ if (!function_exists('settingHelper')) {
         }
     }
 }
+
+if (!function_exists('headerMenu')) {
+
+    function headerFooterMenu($title, $lang = 'en')
+    {
+        try {
+            $settings = AppSettingUtility::settings();
+            if (in_array($title, get_yrsetting('setting_array')) || in_array($title, get_yrsetting('setting_by_lang'))):
+                $data = $settings->where('title', $title)->where('lang', $lang)->first();
+                if (!blank($data)):
+                    return $data->value ? unserialize($data->value) : [];
+                endif;
+            endif;
+        } catch (\Exception $e){
+            return '';
+        }
+    }
+}

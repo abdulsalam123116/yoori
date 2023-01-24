@@ -24,7 +24,8 @@ class User extends EloquentUser implements JWTSubject, ContractAuthenticatable
         'phone',
         'date_of_birth',
         'firebase_auth_id',
-        'currency_id',
+        'currency_code',
+        'country_id',
         'lang_code',
         'is_password_set',
         'gender',
@@ -52,7 +53,8 @@ class User extends EloquentUser implements JWTSubject, ContractAuthenticatable
 
     public $timestamps = true;
 
-    public static function byEmail($email){
+    public static function byEmail($email)
+    {
         return static::whereEmail($email)->first();
     }
     public function image()
@@ -196,6 +198,11 @@ class User extends EloquentUser implements JWTSubject, ContractAuthenticatable
         return $this->hasMany(Notification::class);
     }
 
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
     public function activeSubscription(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(SellerSubscription::class)->latest()->where('status',1)->where('expires_at','>',now());
@@ -204,6 +211,33 @@ class User extends EloquentUser implements JWTSubject, ContractAuthenticatable
     public function getJWTIdentifier()
     {
         return $this->getKey();
+    }
+
+    public function getPhoneCodeAttribute()
+    {
+        $phone_code = '';
+        $country = $this->country;
+        $code = str_contains($country->phonecode,'+') ? $country->phonecode : '+'.$country->phonecode;
+
+        if ($this->phone)
+        {
+            $phone_code_check = str_contains($this->phone,$code);
+            $phone_code_check_without_plus = str_contains($this->phone,$country->phonecode);
+            $phone_code .= $code;
+            if ($phone_code_check)
+            {
+                $phone_code .= str_replace($code,'',$this->phone);
+            }
+            if ($phone_code_check_without_plus && !$phone_code_check)
+            {
+                $phone_code .= str_replace($country->phonecode,'',$this->phone);
+            }
+            if (!$phone_code_check && !$phone_code_check_without_plus)
+            {
+                $phone_code .= $this->phone;
+            }
+        }
+        return $phone_code;
     }
 
     public function getJWTCustomClaims()

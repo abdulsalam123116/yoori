@@ -18,8 +18,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Config::set('app.locale', 'en');
 
-    
-        
+        app_config();
+        update_version();
+
         Schema::defaultStringLength(191);
     }
 }

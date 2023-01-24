@@ -38,8 +38,24 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
+            $this->mapApiRoutes();
+            $this->mapDeliveryHeroApiRoutes();
+            $this->mapSellerApiRoutes();
             $this->mapWebRoutes();
             $this->mapInstallerRoutes();
+            $this->mapAdminRoutes();
+            $this->mapOtpRoutes();
+            $this->mapRefundRoutes();
+            $this->mapDeliveryHeroRoutes();
+            $this->mapWholeSaleProductRoutes();
+            $this->mapRewardRoutes();
+            $this->mapSellerRoutes();
+            $this->mapOfflinePaymentRoutes();
+            $this->mapPosSystemRoutes();
+            $this->mapChatSystemRoutes();
+            $this->mapVideoShoppingRoutes();
+            $this->mapSellerSubscriptionRoutes();
+            $this->mapIshophetRoutes();
         });
     }
 
@@ -166,5 +182,12 @@ class RouteServiceProvider extends ServiceProvider
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/seller-subscription.php'));
+    }
+
+    protected function mapIshophetRoutes()
+    {
+        Route::middleware('web')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/isophet.php'));
     }
 }

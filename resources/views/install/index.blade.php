@@ -150,13 +150,13 @@ endforeach;
             </div>
             <div id="alert-container">
 
-                    <div id="error_m" class="alert alert-danger hide">
+                <div id="error_m" class="alert alert-danger hide">
 
-                    </div>
+                </div>
 
-                    <div id="success_m" class="alert alert-success hide">
+                <div id="success_m" class="alert alert-success hide">
 
-                    </div>
+                </div>
 
             </div>
 
@@ -501,21 +501,21 @@ endforeach;
                                 <tbody>
                                 <?php
                                 foreach ($writeable_directories as $value) {
-                                ?>
+                                    ?>
                                 <tr>
                                     <td id="first-td"><?php echo $value; ?></td>
                                     <td class="text-center">
-                                        <?php if (is_writeable($value)) { ?>
+                                            <?php if (is_writeable($value)) { ?>
                                         <i class="status fa fa-check-circle-o"></i>
-                                        <?php
+                                            <?php
                                         } else {
-                                        $all_requirement_success = false;
-                                        ?>
+                                            $all_requirement_success = false;
+                                            ?>
                                         <i class="status fa fa-times-circle-o"></i>
                                         <?php } ?>
                                     </td>
                                 </tr>
-                                <?php
+                                    <?php
                                 }
                                 ?>
                                 </tbody>
@@ -669,7 +669,6 @@ endforeach;
 <script type="text/javascript" src="{{ static_asset('admin/js/jquery-3.6.0.min.js') }}"></script>
 <script type="text/javascript" src="{{static_asset('install/js/install.js')}}"></script>
 </html>
-
 
 
 

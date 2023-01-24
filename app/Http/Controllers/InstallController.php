@@ -107,14 +107,7 @@ class InstallController extends Controller
                 $table_array = get_object_vars($table);
                 Schema::drop($table_array[key($table_array)]);
             }
-            try {
-                DB::unprepared(file_get_contents(base_path('public/sql/sql.sql')));
-            } catch (\Exception $e) {
-                return response()->json([
-                    'error' => "Installation SQL File Not Found, Please Try Again",
-                    'route' => route('install.initialize'),
-                ]);
-            }
+            DB::unprepared(file_get_contents(base_path('public/sql/sql.sql')));
             if (file_exists(base_path('public/sql/sql.sql'))):
                 unlink(base_path('public/sql/sql.sql'));
             endif;
@@ -156,16 +149,10 @@ class InstallController extends Controller
                 ]);
             }
 
-            try {
-                $this->dataInserts($config);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'error' => "Cannot Configure Applications Default Data, Please try again or contact with script author",
-                    'route' => route('install.initialize'),
-                ]);
-            }
+            $this->dataInserts($config);
             $this->envUpdates();
             File::deleteDirectory($update_file_path);
+            sleep(3);
             Artisan::call('all:clear');
             return response()->json([
                 'success' => "Installation was Successful",

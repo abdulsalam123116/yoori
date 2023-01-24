@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('all:clear')->everyMinute();
+        $schedule->command('all:clear')->everyMinute();
     }
 
     protected function commands()
